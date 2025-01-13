@@ -11,7 +11,8 @@ const app = express();
 
 // MongoDB Atlas Connection
 const MONGODB_URI =
-  "mongodb+srv://radyrado00:rady12345@cluster0.ok7ka.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+  "mongodb+srv://radyrado00:rady12345@cluster0.ok7ka.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0" ||
+  process.env.MONGODB_URI;
 
 // Middleware
 app.use(
@@ -23,26 +24,28 @@ app.use(
 );
 app.use(express.json());
 
-// Serve static files from the 'public' directory
+// Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/sections", authMiddleware, sectionsRouter);
+app.use("/api", sectionsRouter);
 
-// Updated MongoDB Connection without deprecated options
+// MongoDB Connection
 mongoose
-  .connect(MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Successfully connected to MongoDB."))
-  .catch((err) => console.error("Could not connect to MongoDB...", err));
-
+  .connect(MONGODB_URI)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 // Routes
 app.use("/api", sectionsRouter);
 
 // Serve index.html for all other routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// Serve React app
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
