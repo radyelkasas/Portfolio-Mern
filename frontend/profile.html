@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي - انشئ عالمك الخاص</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            min-height: 100vh;
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        .stats-card {
+            background: linear-gradient(45deg, #FF6B6B, #FFE66D);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-edit {
+            background: #FF6B6B;
+            border: none;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            background: #ff8585;
+            transform: translateY(-2px);
+        }
+
+        .section-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .section-item {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .section-item:hover {
+            transform: translateX(-5px);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-star me-2"></i>
+                انشئ عالمك الخاص
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.html">الملف الشخصي</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="stats.html">الإحصائيات</a>
+                    </li>
+                </ul>
+                <button class="btn btn-outline-danger" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    تسجيل الخروج
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <div class="row">
+            <!-- Profile Info -->
+            <div class="col-md-4">
+                <div class="profile-card">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                        <h3 class="mt-3" id="username"></h3>
+                        <p class="text-muted" id="email"></p>
+                    </div>
+
+                    <div class="stats-card">
+                        <div class="row text-center">
+                            <div class="col">
+                                <h4 id="sectionsCount">0</h4>
+                                <small>الأقسام</small>
+                            </div>
+                            <div class="col">
+                                <h4 id="joinDate">-</h4>
+                                <small>تاريخ الانضمام</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-edit w-100" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-edit me-2"></i>
+                        تعديل الملف الشخصي
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sections -->
+            <div class="col-md-8">
+                <div class="profile-card">
+                    <h4 class="mb-4">
+                        <i class="fas fa-shapes me-2"></i>
+                        الأقسام الخاصة بك
+                    </h4>
+                    <div class="section-list" id="sectionsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تعديل الملف الشخصي</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfileForm">
+                        <div class="mb-3">
+                            <label class="form-label">اسم المستخدم</label>
+                            <input type="text" class="form-control" id="editUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">البريد الإلكتروني</label>
+                            <input type="email" class="form-control" id="editEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">كلمة المرور الحالية</label>
+                            <input type="password" class="form-control" id="currentPassword">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">كلمة المرور الجديدة</label>
+                            <input type="password" class="form-control" id="newPassword">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="updateProfile()">حفظ التغييرات</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        // التحقق من المصادقة
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            loadProfile();
+            loadSections();
+        }
+
+        // تحميل بيانات الملف الشخصي
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${API_URL}/auth/verify`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('فشل تحميل البيانات');
+                }
+
+                const user = await response.json();
+                document.getElementById('username').textContent = user.username;
+                document.getElementById('email').textContent = user.email;
+                document.getElementById('joinDate').textContent = new Date(user.createdAt).toLocaleDateString('ar-SA');
+
+                // تعبئة نموذج التعديل
+                document.getElementById('editUsername').value = user.username;
+                document.getElementById('editEmail').value = user.email;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // تحميل الأقسام
+        async function loadSections() {
+            try {
+                const response = await fetch(`${API_URL}/sections`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('فشل تحميل الأقسام');
+                }
+
+                const sections = await response.json();
+                document.getElementById('sectionsCount').textContent = sections.length;
+
+                const sectionsList = document.getElementById('sectionsList');
+                sectionsList.innerHTML = sections.map(section => `
+                    <div class="section-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">${section.title}</h5>
+                            <small class="text-muted">
+                                ${new Date(section.createdAt).toLocaleDateString('ar-SA')}
+                            </small>
+                        </div>
+                        <p class="mb-0 text-muted">${section.content.substring(0, 100)}...</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // تحديث الملف الشخصي
+        async function updateProfile() {
+            const username = document.getElementById('editUsername').value;
+            const email = document.getElementById('editEmail').value;
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        username,
+                        email,
+                        currentPassword,
+                        newPassword
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('فشل تحديث البيانات');
+                }
+
+                await loadProfile();
+                bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+                alert('تم تحديث البيانات بنجاح');
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        }
+
+        // إضافة إشعارات للمستخدم
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 3000);
+        }
+
+        // تأكيد حذف القسم
+        function confirmDelete(sectionId) {
+            if (confirm('هل أنت متأكد من حذف هذا القسم؟')) {
+                deleteSection(sectionId);
+            }
+        }
+
+        // حذف قسم
+        async function deleteSection(id) {
+            try {
+                const response = await fetch(`${API_URL}/sections/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('فشل حذف القسم');
+                }
+
+                showAlert('تم حذف القسم بنجاح');
+                loadSections();
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        // تحميل تفاصيل القسم للتعديل
+        async function editSection(id) {
+            try {
+                const response = await fetch(`${API_URL}/sections/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('فشل تحميل بيانات القسم');
+                }
+
+                const section = await response.json();
+                document.getElementById('editSectionTitle').value = section.title;
+                document.getElementById('editSectionContent').value = section.content;
+                document.getElementById('editSectionColor').value = section.backgroundColor;
+                document.getElementById('editSectionOrder').value = section.order;
+                document.getElementById('editSectionId').value = section._id;
+
+                const modal = new bootstrap.Modal(document.getElementById('editSectionModal'));
+                modal.show();
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        // تحديث القسم
+        async function updateSection() {
+            const id = document.getElementById('editSectionId').value;
+            const formData = {
+                title: document.getElementById('editSectionTitle').value,
+                content: document.getElementById('editSectionContent').value,
+                backgroundColor: document.getElementById('editSectionColor').value,
+                order: document.getElementById('editSectionOrder').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/sections/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('فشل تحديث القسم');
+                }
+
+                showAlert('تم تحديث القسم بنجاح');
+                loadSections();
+                bootstrap.Modal.getInstance(document.getElementById('editSectionModal')).hide();
+            } catch (error) {
+                showAlert(error.message, 'danger');
+            }
+        }
+
+        // إضافة مستمع لتحميل الصفحة
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+
+</html>
