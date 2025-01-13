@@ -5,6 +5,7 @@ const sectionsRouter = require("./routes/sections");
 const authRoutes = require("./routes/auth");
 const authMiddleware = require("./middleware/auth");
 const { JWT_SECRET } = require("./config");
+const path = require("path");
 
 const app = express();
 
@@ -22,6 +23,9 @@ app.use(
 );
 app.use(express.json());
 
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, "public")));
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/sections", authMiddleware, sectionsRouter);
@@ -38,10 +42,15 @@ mongoose
 // Routes
 app.use("/api", sectionsRouter);
 
-// Error handling middleware
+// Serve index.html for all other routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: "حدث خطأ في الخادم" });
+  res.status(500).json({ message: "Server Error" });
 });
 
 // Start server
